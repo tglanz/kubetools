@@ -1,0 +1,27 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bullseye64"
+
+  config.vm.hostname = "kubetools-cplane"
+  config.vm.network "public_network"
+
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.cpus = 2 
+    libvirt.memory = 2048
+  end
+
+  # config.vm.synced_folder "../../scripts", "/vagrant/scripts",
+  #   type: "nfs", nfs_version: 4
+
+  config.vm.provision "install nice to haves",
+    type: "shell", path: "../../scripts/install-nice-to-haves.sh"
+
+  config.vm.provision "install docker",
+    type: "shell", path: "../../scripts/install-docker.sh"
+
+  config.vm.provision "deploy kubernetes components",
+    type: "shell", path: "../../scripts/install-and-deploy-kubernetes.sh"
+
+  config.vm.provision "initialize control plane",
+    type: "shell", path: "../../scripts/initialize-control-plane.sh",
+    privileged: false
+end
